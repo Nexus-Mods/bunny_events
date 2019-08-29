@@ -7,7 +7,7 @@ class AMQPConnector
   end
 
   class << self
-    attr_accessor :active_connection, :active_channel, :channels, :amqp_connection
+    attr_accessor :active_connection, :channels, :amqp_connection
   end
 
   @@defaults = {
@@ -29,13 +29,6 @@ class AMQPConnector
     establish_connection
 
     active_connection
-  end
-
-  def self.channel
-    return active_channel if connected? && active_channel&.open?
-    establish_connection
-
-    active_channel
   end
 
   def self.connected?

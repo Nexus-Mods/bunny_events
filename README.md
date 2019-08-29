@@ -1,5 +1,7 @@
 # MessageQueueEvent
 
+[![Gem Version](https://badge.fury.io/rb/message_queue_event.svg)](https://badge.fury.io/rb/message_queue_event)
+
 A simple wrapper gem to aid with producing events to a message queue in a standardized and uniform way across multiple microservices.
 
 Current Features:
@@ -31,7 +33,7 @@ Or install it yourself as:
 To produce an event to the message queue, we must first define an event. In `app/events/my_test_event.rb`
 
 ```$ruby
-class MyTestEvent2
+class MyTestEvent
   include MessageQueueEvent
 
   # define the event options for queueing this event. Each event type can have different options.
@@ -76,9 +78,12 @@ Publishing the event requires the use of the singleton connector class
 ### Full example
 
 ```
+
+# This is done once as part of the configuration step, usually in a rails initializer, or at the start of your application
 AMQPConnector.amqp_connection = "amqp://rabbitmq:rabbitmq@localhost:5672"
    
-class MyTestEvent2
+# Event definitions are defined in classes, in rails, we generally use app/messages
+class MyTestEvent
  include MessageQueueEvent
 
  # define the event options for queueing this event. Each event type can have different options.
@@ -91,8 +96,8 @@ class MyTestEvent2
  end
 end
 
-d = MyTestEvent2.new "test"
-
+# When we want to create a new instance of an event, we create and publish the object
+d = MyTestEvent.new "test"
 d.publish!
 ```
 
