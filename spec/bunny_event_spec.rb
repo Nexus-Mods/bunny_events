@@ -4,7 +4,7 @@ RSpec.describe BunnyEvent do
   end
 
   it "does not raise an error of any kind" do
-    expect{ DummyMessage.new({
+    expect{ DummyEvent.new({
          msg: "This is a test"
      })}.not_to raise_error
   end
@@ -12,7 +12,7 @@ RSpec.describe BunnyEvent do
   describe "creating a new message queue event" do
 
     let(:event){
-      DummyMessage.new("hello")
+      DummyEvent.new("hello")
     }
 
     it "sets the message correctly" do
@@ -20,7 +20,7 @@ RSpec.describe BunnyEvent do
     end
 
     it "sets the amqp options correctly" do
-      expect(event.class.options).to eq(:exchange => "test_exchange", :exchange_type => :fanout, :bindings => {:queue_1=>{:routing_key=>""}, :queue_2=>{:routing_key=>""}})
+      expect(event.class.options).to eq(:exchange => "test_exchange", :exchange=>"test_exchange", :exchange_opts=>{:durable=>true, :type=>:direct}, :queues=>{:test_queue=>{:opts=>{:durable=>true}, :routing_key=>""}})
     end
   end
 

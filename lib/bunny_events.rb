@@ -63,22 +63,31 @@ class BunnyEvents
 
     channel = @channels[message.class.name]
 
-    # If our message was sent with an exchange name, create and submit this to the exchange, otherwise, just use the default exchange
+    # If the event was sent with an exchange name, create and submit this to the exchange, otherwise, just use the default exchange
     if !opts[:exchange].nil? && !opts[:exchange].empty?
-      x = channel.exchange(opts[:exchange], {:type => opts[:exchange_type] || :direct})
+      x = channel.exchange(opts[:exchange], opts[:exchange_opts] || {})
     else
       x = channel.default_exchange
     end
 
-    # if your event was sent with queue bindings, ensure to create the queue and bindings
-    if !opts[:bindings].nil?
-      opts[:bindings].each do |q, binding|
-        queue = channel.queue q.to_s
-        queue.bind x, routing_key: binding[:routing_key]
-      end
+
+
+    # if the event was sent with queue definitions, ensure to create the bindings
+    if !opts[:queues].nil?
+      handle_queue_definitions channel, x, opts[:queues]
     end
 
     x.publish message.message, :routing_key => opts[:routing_key]
 
-  end
+    end
+
+    def self.handle_queue_definitions (channel, exchange, queues)
+      queues.each do |q, opts|
+        p opts[:routing_key]
+
+        # Create this queue and bind, if the binding options are present
+        queue = channel.queue q.to_s, opts[:opts] || {}
+        queue.bind exchange, :key => opts[:routing_key] || ""
+      end
+    end
 end

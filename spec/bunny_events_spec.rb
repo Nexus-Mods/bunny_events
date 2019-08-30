@@ -20,7 +20,6 @@ RSpec.describe BunnyEvents do
 
       expect(BunnyEvents.connected?).to be(true)
     end
-
   end
 
   describe "publishing an event" do
@@ -28,7 +27,8 @@ RSpec.describe BunnyEvents do
       BunnyEvents.init BunnyMock.new.start
     end
 
-    let(:valid_event) { DummyMessage.new "test" }
+    let(:valid_event) { DummyEvent.new "test" }
+    let(:fanout_event) {DummyFanoutEvent.new "test"}
 
     it "should fail if a non-BunnyEvent was passed" do
       expect{BunnyEvents.publish nil}.to raise_error Exceptions::InvalidBunnyEvent
@@ -37,8 +37,7 @@ RSpec.describe BunnyEvents do
     it "should pass and create queues and exchanges if a valid BunnyEvent was passed" do
       expect{BunnyEvents.publish valid_event}.not_to raise_error
       expect(BunnyEvents.bunny_connection.exchange_exists?('test_exchange')).to be_truthy
-      expect(BunnyEvents.bunny_connection.queue_exists?('queue_1')).to be_truthy
-      expect(BunnyEvents.bunny_connection.queue_exists?('queue_2')).to be_truthy
+      expect(BunnyEvents.bunny_connection.queue_exists?('test_queue')).to be_truthy
     end
   end
 

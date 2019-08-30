@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "bunny_events"
+require "bunny_event"
+
+# You can add fixtures and/or initialization code here to make experimenting
+# with your gem easier. You can also use a different console, if you like.
+
+# (If you use this, don't forget to add pry to your Gemfile!)
+# require "pry"
+# Pry.start
+
+p "Setting up BunnyEvents..."
+BunnyEvents.init Bunny.new("amqp://rabbitmq:rabbitmq@localhost:5672").start
+
+p "Defining DummyEvent"
+class DummyEvent
+  include BunnyEvent
+
+  event_options :exchange => "test_exchange",
+                :exchange_opts => {
+                    :type => :fanout
+                },
+                :queues =>
+                    {
+                        :some_queue => {
+                            :opts => {
+                              :durable => true
+                            },
+                            :routing_key => ""
+                        }
+                    }
+
+  def initialize(msg)
+    @message = "My test message is #{msg}"
+  end
+
+end
+
+p "Publishing event"
+BunnyEvents.publish DummyEvent.new "test"

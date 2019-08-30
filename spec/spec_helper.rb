@@ -1,6 +1,6 @@
 require "bundler/setup"
 require "bunny_event"
-require "dummy_message"
+require "dummy_event"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
