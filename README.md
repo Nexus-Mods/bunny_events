@@ -37,7 +37,7 @@ Or install it yourself as:
 
 To produce an event to the message queue, we must first define an event. In `app/events/my_test_event.rb`
 
-```$ruby
+```ruby
 class MyTestEvent
   include BunnyEvent
 
@@ -57,7 +57,7 @@ end
 
 We can change the payload in the `initialize` method, allowing us complete control over what data is used to create the message.
 
-```$ruby
+```ruby
   def initialize(user, page)
     @message = {
         :user_id => user.id,
@@ -74,7 +74,7 @@ This ensures complete control over how your application produces a message, enab
 
 Publishing the event requires the use of the BunnyEvents class
 
-```$ruby
+```ruby
   # Create event, passing in whatever data is needed
   event = MyTestEvent.new "This is a test event"
   
@@ -84,7 +84,7 @@ Publishing the event requires the use of the BunnyEvents class
 
 ### Full example with initialisation
 
-```
+```ruby
 
 # This is done once as part of the configuration step, usually in a rails initializer, or at the start of your application
 BunnyEvents.init Bunny.new("amqp://rabbitmq:rabbitmq@rabbit1:5672").start
