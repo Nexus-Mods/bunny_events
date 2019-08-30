@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "message_queue_event"
+require "bunny_event"
 require "dummy_message"
 
 RSpec.configure do |config|

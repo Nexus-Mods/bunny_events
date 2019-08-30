@@ -1,11 +1,11 @@
 
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "message_queue_event/version"
+require "bunny_events/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "message_queue_event"
-  spec.version       = MessageQueueEvent::VERSION
+  spec.name          = "bunny_events"
+  spec.version       = BunnyEvent::VERSION
   spec.authors       = ["Dean Lovett"]
   spec.email         = ["dean.lovett@nexusmods.com"]
 

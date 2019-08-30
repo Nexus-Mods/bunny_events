@@ -1,6 +1,8 @@
-require 'amqp_connector'
+require 'bunny_events'
 
-module MessageQueueEvent
+# Module that can be included into a ruby class to create a definition of a BunnyEvent. These events can then be published
+# via the BunnyEvents system.
+module BunnyEvent
 
   attr_accessor :message
 
@@ -17,14 +19,14 @@ module MessageQueueEvent
     end
   end
 
-  # Instance method for publishing a message to the rabbit service
-  def publish!
-    AMQPConnector.publish self
-  end
-
   class << self
     def included(base)
       base.extend ClassMethods
     end
   end
+end
+
+module Exceptions
+  class InvalidBunnyConnection < StandardError; end
+  class InvalidBunnyEvent < StandardError; end
 end

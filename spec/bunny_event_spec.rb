@@ -1,6 +1,6 @@
-RSpec.describe MessageQueueEvent do
+RSpec.describe BunnyEvent do
   it "has a version number" do
-    expect(MessageQueueEvent::VERSION).not_to be nil
+    expect(BunnyEvent::VERSION).not_to be nil
   end
 
   it "does not raise an error of any kind" do
@@ -20,7 +20,7 @@ RSpec.describe MessageQueueEvent do
     end
 
     it "sets the amqp options correctly" do
-      expect(event.class.options).to eq(:exchange => "test_exchange", :exchange_type => :fanout)
+      expect(event.class.options).to eq(:exchange => "test_exchange", :exchange_type => :fanout, :bindings => {:queue_1=>{:routing_key=>""}, :queue_2=>{:routing_key=>""}})
     end
   end
 

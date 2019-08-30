@@ -1,12 +1,17 @@
-# MessageQueueEvent
+# Bunny Events
 
 [![Gem Version](https://badge.fury.io/rb/message_queue_event.svg)](https://badge.fury.io/rb/message_queue_event)
 
-A simple wrapper gem to aid with producing events to a message queue in a standardized and uniform way across multiple microservices.
+A simple wrapper gem to aid with producing events to a message queue, using Bunny, in a standardized and uniform way across multiple microservices.
 
-Current Features:
+Rather than usin Bunny directly, this gem allows an application to define "Event Definitions" which can be defined and published
+in a modular way. This ensures that when you are producing a message, your application logic shouldn't care about how the
+message is produced (E.g. your controller shouldn't care or know anything about what exchange to publish a message to, only the BunnyEvent 
+that has been defined cares)
 
-- Only supports AMQP connections
+Current Features and limitation:
+
+- Allows a bunny connection to initialise the system
 - Allows the definition of abstract events to be used application-wide
 - Customization of exchange and queue options when producing an event
 
@@ -15,7 +20,7 @@ Current Features:
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'message_queue_event'
+gem 'bunny_events'
 ```
 
 And then execute:
@@ -24,7 +29,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install message_queue_event
+    $ gem install bunny_events
 
 ## Usage
 
@@ -34,7 +39,7 @@ To produce an event to the message queue, we must first define an event. In `app
 
 ```$ruby
 class MyTestEvent
-  include MessageQueueEvent
+  include BunnyEvent
 
   # define the event options for queueing this event. Each event type can have different options.
   event_options :exchange => "test_exchange",
@@ -59,36 +64,46 @@ We can change the payload in the `initialize` method, allowing us complete contr
         :user_name => user.name,
         :page => page.url,
         :timestamp => Time.now.to_i
-    }
+    }.to_json
   end
 ```
 
+This ensures complete control over how your application produces a message, enabling your application to utilise JSON, AVRO, or just plain old strings.
+
 ### Publish event
 
-Publishing the event requires the use of the singleton connector class
+Publishing the event requires the use of the BunnyEvents class
 
 ```$ruby
   # Create event, passing in whatever data is needed
   event = MyTestEvent.new "This is a test event"
   
-  # Publish the event
-  event.publish!
+  # Use the BunnyEvents system to publish this event
+  BunnyEvents.publish event
 ```
 
-### Full example
+### Full example with initialisation
 
 ```
 
 # This is done once as part of the configuration step, usually in a rails initializer, or at the start of your application
-AMQPConnector.amqp_connection = "amqp://rabbitmq:rabbitmq@localhost:5672"
+BunnyEvents.init Bunny.new("amqp://rabbitmq:rabbitmq@rabbit1:5672").start
    
 # Event definitions are defined in classes, in rails, we generally use app/messages
 class MyTestEvent
- include MessageQueueEvent
+ include BunnyEvent
 
  # define the event options for queueing this event. Each event type can have different options.
  event_options :exchange => "test_exchange",
-               :exchange_type => :fanout
+               :exchange_type => :fanout,
+               :bindings => {
+                   :queue_1 => {
+                       :routing_key => ""
+                   },
+                   :queue_2 => {
+                       :routing_key => ""
+                   },
+               }
 
  # We can define what the message payload looks like here.
  def initialize(msg)
@@ -97,8 +112,8 @@ class MyTestEvent
 end
 
 # When we want to create a new instance of an event, we create and publish the object
-d = MyTestEvent.new "test"
-d.publish!
+event = MyTestEvent.new "test"
+BunnyEvents.publish event
 ```
 
 ## Development
