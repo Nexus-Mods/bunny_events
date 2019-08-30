@@ -93,17 +93,20 @@ BunnyEvents.init Bunny.new("amqp://rabbitmq:rabbitmq@rabbit1:5672").start
 class MyTestEvent
  include BunnyEvent
 
- # define the event options for queueing this event. Each event type can have different options.
- event_options :exchange => "test_exchange",
-               :exchange_type => :fanout,
-               :bindings => {
-                   :queue_1 => {
-                       :routing_key => ""
-                   },
-                   :queue_2 => {
-                       :routing_key => ""
-                   },
-               }
+# define the event options for queueing this event. Each event type can have different options.
+event_options :exchange => "test_exchange",
+            :exchange_opts => {
+                :type => :fanout
+            },
+            :queues =>
+                {
+                    :some_queue => {
+                        :opts => {
+                          :durable => true
+                        },
+                        :routing_key => ""
+                    }
+                }
 
  # We can define what the message payload looks like here.
  def initialize(msg)
