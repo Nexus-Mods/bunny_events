@@ -32,7 +32,7 @@ Or install it yourself as:
 
 To produce an event to the message queue, we must first define an event. In `app/events/my_test_event.rb`
 
-```$ruby
+```ruby
 class MyTestEvent
   include MessageQueueEvent
 
@@ -52,7 +52,7 @@ end
 
 We can change the payload in the `initialize` method, allowing us complete control over what data is used to create the message.
 
-```$ruby
+```ruby
   def initialize(user, page)
     @message = {
         :user_id => user.id,
@@ -67,7 +67,7 @@ We can change the payload in the `initialize` method, allowing us complete contr
 
 Publishing the event requires the use of the singleton connector class
 
-```$ruby
+```ruby
   # Create event, passing in whatever data is needed
   event = MyTestEvent.new "This is a test event"
   
@@ -77,7 +77,7 @@ Publishing the event requires the use of the singleton connector class
 
 ### Full example
 
-```
+```ruby
 
 # This is done once as part of the configuration step, usually in a rails initializer, or at the start of your application
 AMQPConnector.amqp_connection = "amqp://rabbitmq:rabbitmq@localhost:5672"
