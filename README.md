@@ -79,7 +79,9 @@ Publishing the event requires the use of the BunnyEvents class
   event = MyTestEvent.new "This is a test event"
   
   # Use the BunnyEvents system to publish this event
-  BunnyEvents.publish event
+  bunny_events = BunnyEvents.new 
+  bunny_events.init Bunny.new("amqp://rabbitmq:rabbitmq@rabbit1:5672").start
+  bunny_events.publish event
 ```
 
 ### Full example with initialisation
@@ -87,7 +89,8 @@ Publishing the event requires the use of the BunnyEvents class
 ```ruby
 
 # This is done once as part of the configuration step, usually in a rails initializer, or at the start of your application
-BunnyEvents.init Bunny.new("amqp://rabbitmq:rabbitmq@rabbit1:5672").start
+bunny_events = BunnyEvents.new 
+bunny_events.init Bunny.new("amqp://rabbitmq:rabbitmq@rabbit1:5672").start
    
 # Event definitions are defined in classes, in rails, we generally use app/messages
 class MyTestEvent
@@ -116,7 +119,7 @@ end
 
 # When we want to create a new instance of an event, we create and publish the object
 event = MyTestEvent.new "test"
-BunnyEvents.publish event
+bunny_events.publish event
 ```
 
 ## Development
