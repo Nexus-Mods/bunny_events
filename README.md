@@ -1,6 +1,6 @@
 # Bunny Events
 
-[![Gem Version](https://badge.fury.io/rb/message_queue_event.svg)](https://badge.fury.io/rb/message_queue_event)
+[![Gem Version](https://badge.fury.io/rb/bunny_events.svg)](https://badge.fury.io/rb/bunny_events)
 
 A simple wrapper gem to aid with producing events to a message queue, using Bunny, in a standardized and uniform way across multiple microservices.
 
