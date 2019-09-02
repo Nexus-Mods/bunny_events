@@ -11,9 +11,6 @@ require "bunny_event"
 # require "pry"
 # Pry.start
 
-p "Setting up BunnyEvents..."
-BunnyEvents.init Bunny.new("amqp://rabbitmq:rabbitmq@localhost:5672").start
-
 p "Defining DummyEvent"
 class DummyEvent
   include BunnyEvent
@@ -39,4 +36,7 @@ class DummyEvent
 end
 
 p "Publishing event"
-BunnyEvents.publish DummyEvent.new "test"
+bunny_events = BunnyEvents.new
+bunny_events.init Bunny.new("amqp://rabbitmq:rabbitmq@localhost:5672").start
+
+bunny_events.publish DummyEvent.new "test"
