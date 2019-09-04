@@ -4,6 +4,10 @@ class BunnyEvents
 
   attr_accessor :channels, :bunny_connection
 
+  # Keeps track of which events have been intiailized by this BunnyEvents worker. Used to ensure that the queue and
+  # exchange creation is only performed once.
+  attr_accessor :initialized_events
+
   @@defaults = {
       :exchange => "",
       :exchange_type => :direct,
@@ -27,6 +31,8 @@ class BunnyEvents
 
     @channels = {}
 
+    @initialized_exchanges = {}
+
     @bunny_connection = bunny_connection
 
   end
@@ -36,7 +42,7 @@ class BunnyEvents
   end
 
   # Public message. message should be an instance of BaseMessage (or a class with BaseMessage included)
-  def publish(message)
+  def publish(message, routing_key = nil)
 
     unless message.class.included_modules.include?(BunnyEvent)
       raise Exceptions::InvalidBunnyEvent.new
@@ -56,21 +62,33 @@ class BunnyEvents
 
     channel = @channels[message.class.name]
 
-    # If the event was sent with an exchange name, create and submit this to the exchange, otherwise, just use the default exchange
-    if !opts[:exchange].nil? && !opts[:exchange].empty?
-      x = channel.exchange(opts[:exchange], opts[:exchange_opts] || {})
+    #  Ensure that the exchange, queue and binding creation is only performed once
+    if (!@initialized_exchanges.key?(message.class.name)) || opts[:always_create_when_publishing]
+      # If the event was sent with an exchange name, create and submit this to the exchange, otherwise, just use the default exchange
+      if !opts[:exchange].nil? && !opts[:exchange].empty?
+        x = channel.exchange(opts[:exchange], opts[:exchange_opts] || {})
+      else
+        x = channel.default_exchange
+      end
+      # if the event was sent with queue definitions, ensure to create the bindings
+      if !opts[:queues].nil?
+        handle_queue_definitions channel, x, opts[:queues]
+      end
+
+      # ensure this event's creation params are not processed again
+      @initialized_exchanges[message.class.name] = x
     else
-      x = channel.default_exchange
+      x = @initialized_exchanges[message.class.name]
     end
 
-    # if the event was sent with queue definitions, ensure to create the bindings
-    if !opts[:queues].nil?
-      handle_queue_definitions channel, x, opts[:queues]
+    # ensure exchange is not null
+    if x.nil? || !@bunny_connection.exchange_exists?(opts[:exchange])
+      raise Exceptions::InvalidExchange.new
     end
 
-    x.publish message.message, :routing_key => opts[:routing_key]
+    x.publish message.message, :routing_key => routing_key || opts[:routing_key]
 
-    end
+  end
 
   private
     def handle_queue_definitions (channel, exchange, queues)

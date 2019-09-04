@@ -4,7 +4,7 @@
 
 A simple wrapper gem to aid with producing events to a message queue, using Bunny, in a standardized and uniform way across multiple microservices.
 
-Rather than usin Bunny directly, this gem allows an application to define "Event Definitions" which can be defined and published
+Rather than using Bunny directly, this gem allows an application to define "Event Definitions" which can be defined and published
 in a modular way. This ensures that when you are producing a message, your application logic shouldn't care about how the
 message is produced (E.g. your controller shouldn't care or know anything about what exchange to publish a message to, only the BunnyEvent 
 that has been defined cares)
@@ -14,6 +14,7 @@ Current Features and limitation:
 - Allows a bunny connection to initialise the system
 - Allows the definition of abstract events to be used application-wide
 - Customization of exchange and queue options when producing an event
+- By default, only initialises the exchange and queues on the first publish. This can be overriden with `opts[:always_create_when_publishing]`
 
 ## Installation
 
@@ -30,6 +31,52 @@ And then execute:
 Or install it yourself as:
 
     $ gem install bunny_events
+    
+### Rails Installation
+To initialise the system with Rails, create a new intiailizer:
+
+```ruby
+# config/initializers/bunny-events.rb
+if !Rails.env.test?
+  $BUNNY_EVENTS = BunnyEvents.new
+  $BUNNY_EVENTS.init Bunny.new("amqp://rabbitmq:rabbitmq@rabbit1:5672").start
+end
+```
+
+Events can then be created in app/events:
+
+```ruby
+require 'bunny_event'
+
+class MyTestEvent
+  include BunnyEvent
+
+  # define the event options for queueing this event. Each event type can have different options.
+  event_options :exchange => "test_exchange",
+                :exchange_opts => {
+                    :type => :fanout
+                }
+
+  # We can define what the message payload looks like here.
+  def initialize(msg)
+    @message = "My test message is #{msg}"
+  end
+end
+```
+
+### Rails Testing
+
+To use Bunny Events in tests, you can initialize a new instance of the system before every test (or just a single test) with BunnyMock
+
+```ruby
+before(:each) do
+    @mock = BunnyMock.new.start
+    $BUNNY_EVENTS = BunnyEvents.new
+    $BUNNY_EVENTS.init @mock
+end
+```
+
+Note: This requires the `bunny-mock` gem to be installed in your test environment
 
 ## Usage
 
@@ -95,6 +142,18 @@ Publishing the event requires the use of the BunnyEvents class
   bunny_events.init Bunny.new("amqp://rabbitmq:rabbitmq@rabbit1:5672").start
   bunny_events.publish event
 ```
+
+### Configuration
+
+When defining an event, many options can be set via the event_options class method.
+
+- `exchange` - Name of the exchange this event will publish it's messages to
+- `exchange_opts` - Bunny-specific options for creating an exchange. See http://rubybunny.info/articles/exchanges.html for more information.
+- `queues` - A hash of queues to be created and bound to the exchange. Each key consists of the name of the queue and the value is another hash, with the following options:
+   - `opts` - Bunny-specific options fo creating a queue
+   - `routing_key` - Key used for binding this queue to the exchange
+- `always_create_when_publishing` - Overrides the queue/exchange creation process to run every time a message is processed. Default: `false`
+- `routing_key` - The default routing key used for all messages pushed for this event. Can be changed when publishing a message E.g. ```bunny_events.publish event, "custom_routing_key"```
 
 ### Full example with initialisation
 

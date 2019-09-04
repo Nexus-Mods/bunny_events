@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bunny_events (0.1.1)
+    bunny_events (0.2.2)
       bunny (>= 2.14.0)
 
 GEM

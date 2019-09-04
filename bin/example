@@ -17,7 +17,7 @@ class DummyEvent
 
   event_options :exchange => "test_exchange",
                 :exchange_opts => {
-                    :type => :fanout
+                    :type => :direct
                 },
                 :queues =>
                     {
@@ -29,6 +29,7 @@ class DummyEvent
                         }
                     }
 
+
   def initialize(msg)
     @message = "My test message is #{msg}"
   end
@@ -36,7 +37,24 @@ class DummyEvent
 end
 
 p "Publishing event"
+
 bunny_events = BunnyEvents.new
-bunny_events.init Bunny.new("amqp://rabbitmq:rabbitmq@localhost:5672").start
+bunny = Bunny.new("amqp://rabbitmq:rabbitmq@localhost:5672").start
+bunny_events.init bunny
 
 bunny_events.publish DummyEvent.new "test"
+
+p "deleting exchane"
+p bunny.exchange_exists? "test_exchange"
+
+x = bunny_events.channels["DummyEvents"].exchange "test_exchange"
+x.delete
+
+p "Does exchange exist?"
+p bunny.exchange_exists? "test_exchange"
+
+bunny_events.publish DummyEvent.new "test"
+
+p bunny.exchange_exists? "test_exchange"
+
+p "end"

@@ -53,3 +53,28 @@ class DummyFanoutEvent
   end
 
 end
+
+class AlwaysCreateDummyEvent
+  include BunnyEvent
+
+  event_options :exchange => "test_exchange",
+                :exchange_opts => {
+                    :durable => true,
+                    :type => :direct
+                },
+                :queues =>
+                    {
+                        :test_queue => {
+                            :opts => {
+                                :durable => true
+                            },
+                            :routing_key => ""
+                        }
+                    },
+                :always_create_when_publishing => true
+
+  def initialize(msg)
+    @message = "My test message is #{msg}"
+  end
+
+end

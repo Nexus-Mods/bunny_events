@@ -29,4 +29,5 @@ end
 module Exceptions
   class InvalidBunnyConnection < StandardError; end
   class InvalidBunnyEvent < StandardError; end
+  class InvalidExchange < StandardError; end
 end

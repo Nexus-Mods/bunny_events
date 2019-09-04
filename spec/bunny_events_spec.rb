@@ -2,7 +2,6 @@ require 'bunny-mock'
 
 RSpec.describe BunnyEvents do
 
-  let(:mock_bunny) {}
   let(:bunny_events) {  BunnyEvents.new }
 
   it "should not be connected by default" do
@@ -24,12 +23,14 @@ RSpec.describe BunnyEvents do
   end
 
   describe "publishing an event" do
+
     before(:each) do
       bunny_events.init BunnyMock.new.start
     end
 
     let(:valid_event) { DummyEvent.new "test" }
     let(:fanout_event) {DummyFanoutEvent.new "test"}
+    let(:always_create_event) {AlwaysCreateDummyEvent.new "test"}
 
     it "should fail if a non-BunnyEvent was passed" do
       expect{bunny_events.publish nil}.to raise_error Exceptions::InvalidBunnyEvent
@@ -41,5 +42,4 @@ RSpec.describe BunnyEvents do
       expect(bunny_events.bunny_connection.queue_exists?('test_queue')).to be_truthy
     end
   end
-
 end
