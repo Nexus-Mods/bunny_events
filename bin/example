@@ -47,7 +47,7 @@ bunny_events.publish DummyEvent.new "test"
 p "deleting exchane"
 p bunny.exchange_exists? "test_exchange"
 
-x = bunny_events.channels["DummyEvents"].exchange "test_exchange"
+x = bunny_events.channels["DummyEvent"].exchange "test_exchange"
 x.delete
 
 p "Does exchange exist?"

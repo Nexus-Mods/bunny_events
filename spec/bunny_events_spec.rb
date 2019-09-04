@@ -41,5 +41,27 @@ RSpec.describe BunnyEvents do
       expect(bunny_events.bunny_connection.exchange_exists?('test_exchange')).to be_truthy
       expect(bunny_events.bunny_connection.queue_exists?('test_queue')).to be_truthy
     end
+
+    it "should only create queues on the first pass by default" do
+
+      bunny_mock = BunnyMock.new.start
+      bunny_events.init bunny_mock
+
+      expect{bunny_events.publish valid_event}.not_to raise_error
+      expect(bunny_mock.exchange_exists?('test_exchange')).to be_truthy
+      expect(bunny_mock.queue_exists?('test_queue')).to be_truthy
+
+      # delete exchange to check creation isn't performed a second time
+      channel = bunny_mock.channel
+      x = channel.exchange :test_exchange
+      x.delete
+
+      # We are expecting an error, as we just manually deleted the exchange, but the event system should only
+      # create the queues and exchanges once by default.
+      bunny_events.publish valid_event
+
+      expect(bunny_events.bunny_connection.exchange_exists?('test_exchange')).to be_falsey
+    end
+
   end
 end
