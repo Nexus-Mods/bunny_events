@@ -31,6 +31,7 @@ RSpec.describe BunnyEvents do
     let(:valid_event) { DummyEvent.new "test" }
     let(:fanout_event) {DummyFanoutEvent.new "test"}
     let(:always_create_event) {AlwaysCreateDummyEvent.new "test"}
+    let(:default_exchange_event) {DefaultExchangeDummyEvent.new "test"}
 
     it "should fail if a non-BunnyEvent was passed" do
       expect{bunny_events.publish nil}.to raise_error Exceptions::InvalidBunnyEvent
@@ -61,6 +62,12 @@ RSpec.describe BunnyEvents do
       bunny_events.publish valid_event
 
       expect(bunny_events.bunny_connection.exchange_exists?('test_exchange')).to be_falsey
+    end
+
+    it "shouldn't automatically bind the queues to the default exchange" do
+      expect{bunny_events.publish default_exchange_event}.not_to raise_error
+      expect(bunny_events.bunny_connection.exchange_exists?('')).to be_truthy
+      expect(bunny_events.bunny_connection.queue_exists?('default_exchange_queue')).to be_truthy
     end
 
   end

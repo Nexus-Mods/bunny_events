@@ -78,3 +78,22 @@ class AlwaysCreateDummyEvent
   end
 
 end
+
+
+class DefaultExchangeDummyEvent
+  include BunnyEvent
+
+  event_options :exchange => "",
+                :queues =>
+                    {
+                        :default_exchange_queue => {
+                            :ignore_bind => true
+                        }
+                    },
+                :routing_key => "default_exchange_queue"
+
+  def initialize(msg)
+    @message = "My test message is #{msg}"
+  end
+
+end

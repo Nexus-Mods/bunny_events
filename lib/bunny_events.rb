@@ -95,7 +95,10 @@ class BunnyEvents
       queues.each do |q, opts|
         # Create this queue and bind, if the binding options are present
         queue = channel.queue q.to_s, opts[:opts] || {}
-        queue.bind exchange, :key => opts[:routing_key] || ""
+
+        if opts[:ignore_bind]
+          queue.bind exchange, :key => opts[:routing_key] || ""
+        end
       end
     end
 end

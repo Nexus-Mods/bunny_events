@@ -158,6 +158,7 @@ When defining an event, many options can be set via the event_options class meth
 - `queues` - A hash of queues to be created and bound to the exchange. Each key consists of the name of the queue and the value is another hash, with the following options:
    - `opts` - Bunny-specific options fo creating a queue
    - `routing_key` - Key used for binding this queue to the exchange
+   - `ignore_bind` - Can be used to override the binding. Defaults to `false`. If true, will not bind this queue to the exchange. Is useful when utilising the default exchange.
 - `always_create_when_publishing` - Overrides the queue/exchange creation process to run every time a message is processed. Default: `false`
 - `routing_key` - The default routing key used for all messages pushed for this event. Can be changed when publishing a message E.g. ```bunny_events.publish event, "custom_routing_key"```
 
