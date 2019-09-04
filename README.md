@@ -143,6 +143,12 @@ Publishing the event requires the use of the BunnyEvents class
   bunny_events.publish event
 ```
 
+When publishing, a custom routing key can also be used
+
+```ruby
+bunny_events.publish event, "some_routing_key"
+```
+
 ### Configuration
 
 When defining an event, many options can be set via the event_options class method.
