@@ -38,12 +38,24 @@ Or install it yourself as:
 To produce an event to the message queue, we must first define an event. In `app/events/my_test_event.rb`
 
 ```ruby
+require 'bunny_event'
 class MyTestEvent
   include BunnyEvent
 
   # define the event options for queueing this event. Each event type can have different options.
   event_options :exchange => "test_exchange",
-                :exchange_type => :fanout
+                :exchange_opts => {
+                    :type => :fanout
+                },
+                :queues =>
+                    {
+                        :some_queue => {
+                            :opts => {
+                              :durable => true
+                            },
+                            :routing_key => ""
+                        }
+                    }
 
   # We can define what the message payload looks like here.
   def initialize(msg)
@@ -87,7 +99,7 @@ Publishing the event requires the use of the BunnyEvents class
 ### Full example with initialisation
 
 ```ruby
-
+require 'bunny_event'
 # This is done once as part of the configuration step, usually in a rails initializer, or at the start of your application
 bunny_events = BunnyEvents.new 
 bunny_events.init Bunny.new("amqp://rabbitmq:rabbitmq@rabbit1:5672").start
@@ -130,7 +142,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/Nexus-Mods/message_queue_event.
+Bug reports and pull requests are welcome on GitHub at https://github.com/Nexus-Mods/bunny_events
 
 ## License
 
