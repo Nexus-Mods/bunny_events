@@ -20,7 +20,7 @@ RSpec.describe BunnyEvent do
     end
 
     it "sets the amqp options correctly" do
-      expect(event.class.options).to eq(:exchange => "test_exchange", :exchange=>"test_exchange", :exchange_opts=>{:durable=>true, :type=>:direct}, :queues=>{:test_queue=>{:opts=>{:durable=>true}, :routing_key=>""}})
+      expect(event.class.options).to eq(:routing_key=>"test_queue", :exchange => "test_exchange", :exchange=>"test_exchange", :exchange_opts=>{:durable=>true, :type=>:direct}, :queues=>{:test_queue=>{:opts=>{:durable=>true}, :routing_key=>""}})
     end
   end
 

@@ -49,7 +49,7 @@ class BunnyEvents
     end
 
     unless connected?
-      throw "Not connected"
+      raise Exceptions::InvalidBunnyConnection.new
     end
 
     # get the options defined by the message queue event class
@@ -76,18 +76,18 @@ class BunnyEvents
       end
 
       # ensure this event's creation params are not processed again
-      @initialized_exchanges[message.class.name] = x
-    else
-      x = @initialized_exchanges[message.class.name]
+      @initialized_exchanges[message.class.name] ||= x
     end
+
+    x ||= @initialized_exchanges[message.class.name]
 
     # ensure exchange is not null
     if x.nil? || !@bunny_connection.exchange_exists?(opts[:exchange])
       raise Exceptions::InvalidExchange.new
     end
 
+    # publish message along with the optional routing key
     x.publish message.message, :routing_key => routing_key || opts[:routing_key]
-
   end
 
   private
@@ -96,7 +96,12 @@ class BunnyEvents
         # Create this queue and bind, if the binding options are present
         queue = channel.queue q.to_s, opts[:opts] || {}
 
-        if opts[:ignore_bind]
+        # if ignore bind isn't set, set to nil
+        ignore_bind = opts[:ignore_bind] || false
+
+        # if we aren't ignoring the binding for this queue, check if it's already bound. We also shouldn't bind directly
+        # to the default queue
+        if !ignore_bind && !queue.bound_to?(exchange) && exchange.name != ""
           queue.bind exchange, :key => opts[:routing_key] || ""
         end
       end
