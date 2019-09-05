@@ -3,11 +3,9 @@ require 'bunny_events'
 # Module that can be included into a ruby class to create a definition of a BunnyEvent. These events can then be published
 # via the BunnyEvents system.
 module BunnyEvent
-
   attr_accessor :message
 
   module ClassMethods
-
     # Class method to allow the setting of event options in the message definitions
     def event_options(options)
       @options = options
