@@ -1,6 +1,6 @@
 # Bunny Events
 
-[![Gem Version](https://badge.fury.io/rb/bunny_events.svg)](https://badge.fury.io/rb/bunny_events) [![Build Status](https://travis-ci.org/Nexus-Mods/bunny_events.svg?branch=master)](https://travis-ci.org/Nexus-Mods/bunny_events)
+[![Gem Version](https://badge.fury.io/rb/bunny_events.svg)](https://badge.fury.io/rb/bunny_events) [![Build Status](https://travis-ci.org/Nexus-Mods/bunny_events.svg?branch=master)](https://travis-ci.org/Nexus-Mods/bunny_events) [![Coverage Status](https://coveralls.io/repos/github/Nexus-Mods/bunny_events/badge.svg?branch=feature/coveralls)](https://coveralls.io/github/Nexus-Mods/bunny_events?branch=feature/coveralls)
 
 A simple wrapper gem to aid with producing events to a message queue, using Bunny, in a standardized and uniform way across multiple microservices.
 
