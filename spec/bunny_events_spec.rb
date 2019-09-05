@@ -20,6 +20,15 @@ RSpec.describe BunnyEvents do
 
       expect(bunny_events.connected?).to be(true)
     end
+
+    it "should throw correct error if a message is published with invalid connection" do
+      bunny_mock =  BunnyMock.new.start
+      bunny_mock.stop
+      bunny_events.init bunny_mock
+
+      expect(bunny_events.connected?).to be(false)
+      expect{bunny_events.publish DummyEvent.new "test"}.to raise_error Exceptions::InvalidBunnyConnection
+    end
   end
 
   before(:each) do
