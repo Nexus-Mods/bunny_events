@@ -1,3 +1,6 @@
+require 'coveralls'
+Coveralls.wear!
+
 require "bundler/setup"
 require "bunny_event"
 require "dummy_event"
