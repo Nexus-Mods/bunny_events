@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
-require "bundler/setup"
-require "bunny_events"
-require "bunny_event"
+require 'bundler/setup'
+require 'bunny_events'
+require 'bunny_event'
 
 # You can add fixtures and/or initialization code here to make experimenting
 # with your gem easier. You can also use a different console, if you like.
@@ -11,50 +11,47 @@ require "bunny_event"
 # require "pry"
 # Pry.start
 
-p "Defining DummyEvent"
+p 'Defining DummyEvent'
 class DummyEvent
   include BunnyEvent
 
-  event_options :exchange => "test_exchange",
-                :exchange_opts => {
-                    :type => :direct
+  event_options exchange: 'test_exchange',
+                exchange_opts: {
+                  type: :direct
                 },
-                :queues =>
-                    {
-                        :some_queue => {
-                            :opts => {
-                              :durable => true
-                            },
-                            :routing_key => ""
-                        }
-                    }
-
+                queues: {
+                  some_queue: {
+                    opts: {
+                      durable: true
+                    },
+                    routing_key: ''
+                  }
+                }
 
   def initialize(msg)
     @message = "My test message is #{msg}"
   end
-
 end
 
-p "Publishing event"
+p 'Publishing event'
 
 bunny_events = BunnyEvents.new
-bunny = Bunny.new("amqp://rabbitmq:rabbitmq@localhost:5672").start
+bunny = Bunny.new('amqp://rabbitmq:rabbitmq@localhost:5672').start
 bunny_events.init bunny
 
-bunny_events.publish DummyEvent.new "test"
+bunny_events.publish DummyEvent.new 'test'
 
-p "deleting exchane"
-p bunny.exchange_exists? "test_exchange"
+p 'deleting exchane'
+p bunny.exchange_exists? 'test_exchange'
 
-x = bunny_events.channels["DummyEvent"].exchange "test_exchange"
+x = bunny_events.channels['DummyEvent'].exchange 'test_exchange'
 x.delete
 
-p "Does exchange exist?"
-p bunny.exchange_exists? "test_exchange"
+p 'Does exchange exist?'
+p bunny.exchange_exists? 'test_exchange'
 
-bunny_events.publish DummyEvent.new "test"
+bunny_events.publish DummyEvent.new 'test'
 
-p bunny.exchange_exists? "test_exchange"
+p bunny.exchange_exists? 'test_exchange'
 
-p "end"
+p 'end'
