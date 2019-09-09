@@ -2,6 +2,8 @@
 
 [![Gem Version](https://badge.fury.io/rb/bunny_events.svg)](https://badge.fury.io/rb/bunny_events) [![Build Status](https://travis-ci.org/Nexus-Mods/bunny_events.svg?branch=master)](https://travis-ci.org/Nexus-Mods/bunny_events) [![Coverage Status](https://coveralls.io/repos/github/Nexus-Mods/bunny_events/badge.svg?branch=master)](https://coveralls.io/github/Nexus-Mods/bunny_events?branch=master)
 
+<p><img height="200" width="200" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/3333883/bunny_events_logo.png" /></p>
+
 A simple wrapper gem to aid with producing events to a message queue, using Bunny, in a standardized and uniform way across multiple microservices.
 
 Rather than using Bunny directly, this gem allows an application to define "Event Definitions" which can be defined and published
