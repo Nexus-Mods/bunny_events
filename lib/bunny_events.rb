@@ -94,7 +94,7 @@ class BunnyEvents
 
       # if we aren't ignoring the binding for this queue, check if it's already bound. We also shouldn't bind directly
       # to the default queue
-      if !ignore_bind && !queue.bound_to?(exchange) && exchange.name != ''
+      if !ignore_bind && exchange.name != ''
         queue.bind exchange, key: opts[:routing_key] || ''
       end
     end
